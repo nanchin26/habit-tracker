@@ -12,6 +12,7 @@ export default function DashboardPage() {
   const [habits, setHabits] = useState<Habit[]>([])
   const [showForm, setShowForm] = useState(false)
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null)
+  const [email, setEmail] = useState('')
   const today = new Date().toISOString().split('T')[0]
 
   useEffect(() => {
@@ -21,6 +22,7 @@ export default function DashboardPage() {
       return
     }
 
+    setEmail(session.email)
     const allHabits = getHabits()
     const userHabits = allHabits.filter(h => h.userId === session.userId)
     setHabits(userHabits)
@@ -87,53 +89,82 @@ export default function DashboardPage() {
   }
 
   return (
-    <div data-testid="dashboard-page">
-      <h1>Dashboard</h1>
-
-      <button
-        data-testid="auth-logout-button"
-        onClick={handleLogout}
-      >
-        Logout
-      </button>
-
-      <button
-        data-testid="create-habit-button"
-        onClick={() => {
-          setEditingHabit(null)
-          setShowForm(true)
-        }}
-      >
-        Create Habit
-      </button>
-
-      {showForm && (
-        <HabitForm
-          onSave={handleSave}
-          onCancel={() => {
-            setShowForm(false)
-            setEditingHabit(null)
-          }}
-          existing={editingHabit ?? undefined}
-        />
-      )}
-
-      {habits.length === 0 && !showForm && (
-        <div data-testid="empty-state">
-          <p>No habits yet. Create one!</p>
+    <div
+      data-testid="dashboard-page"
+      className="min-h-screen bg-gray-50"
+    >
+      {/* Header */}
+      <div className="bg-indigo-600 px-4 py-5">
+        <div className="max-w-md mx-auto flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-white">Habit Tracker</h1>
+            <p className="text-indigo-200 text-sm">{email}</p>
+          </div>
+          <button
+            data-testid="auth-logout-button"
+            onClick={handleLogout}
+            className="bg-indigo-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-400 transition"
+          >
+            Logout
+          </button>
         </div>
-      )}
+      </div>
 
-      {habits.map(habit => (
-        <HabitCard
-          key={habit.id}
-          habit={habit}
-          onUpdate={handleUpdate}
-          onDelete={handleDelete}
-          onEdit={handleEdit}
-          today={today}
-        />
-      ))}
+      {/* Main content */}
+      <div className="max-w-md mx-auto px-4 py-6">
+
+        {/* Create button */}
+        {!showForm && (
+          <button
+            data-testid="create-habit-button"
+            onClick={() => {
+              setEditingHabit(null)
+              setShowForm(true)
+            }}
+            className="w-full bg-indigo-600 text-white py-3 rounded-2xl font-semibold hover:bg-indigo-700 transition mb-6"
+          >
+            + Create Habit
+          </button>
+        )}
+
+        {/* Habit form */}
+        {showForm && (
+          <HabitForm
+            onSave={handleSave}
+            onCancel={() => {
+              setShowForm(false)
+              setEditingHabit(null)
+            }}
+            existing={editingHabit ?? undefined}
+          />
+        )}
+
+        {/* Empty state */}
+        {habits.length === 0 && !showForm && (
+          <div
+            data-testid="empty-state"
+            className="text-center py-16"
+          >
+            <p className="text-4xl mb-4">🌱</p>
+            <p className="text-gray-500 font-medium">No habits yet</p>
+            <p className="text-gray-400 text-sm mt-1">
+              Create your first habit to get started
+            </p>
+          </div>
+        )}
+
+        {/* Habit list */}
+        {habits.map(habit => (
+          <HabitCard
+            key={habit.id}
+            habit={habit}
+            onUpdate={handleUpdate}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+            today={today}
+          />
+        ))}
+      </div>
     </div>
   )
 }

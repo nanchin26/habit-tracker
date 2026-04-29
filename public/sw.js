@@ -1,4 +1,4 @@
-const CACHE_NAME = 'habit-tracker-v1';
+const CACHE_NAME = 'habit-tracker-v1'
 
 const APP_SHELL = [
   '/',
@@ -10,7 +10,7 @@ const APP_SHELL = [
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache  => {
+    caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(APP_SHELL)
     })
   )
